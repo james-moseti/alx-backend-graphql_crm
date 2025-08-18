@@ -1,9 +1,11 @@
 # crm/schema.py
 import graphene
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from .models import Customer, Product, Order
+from .filters import CustomerFilter, ProductFilter, OrderFilter
 import re
 from decimal import Decimal
 
@@ -13,18 +15,24 @@ class CustomerType(DjangoObjectType):
     class Meta:
         model = Customer
         fields = '__all__'
+        interfaces = (graphene.relay.Node,)
+        filterset_class = CustomerFilter
 
 
 class ProductType(DjangoObjectType):
     class Meta:
         model = Product
         fields = '__all__'
+        interfaces = (graphene.relay.Node,)
+        filterset_class = ProductFilter
 
 
 class OrderType(DjangoObjectType):
     class Meta:
         model = Order
         fields = '__all__'
+        interfaces = (graphene.relay.Node,)
+        filterset_class = OrderFilter
 
 
 # Input Types
@@ -290,13 +298,21 @@ class CreateOrder(graphene.Mutation):
 # Query Class
 class Query(graphene.ObjectType):
     hello = graphene.String()
+    
+    # Simple list queries (existing)
     customers = graphene.List(CustomerType)
     products = graphene.List(ProductType)
     orders = graphene.List(OrderType)
     
+    # Single object queries (existing)
     customer = graphene.Field(CustomerType, id=graphene.ID())
     product = graphene.Field(ProductType, id=graphene.ID())
     order = graphene.Field(OrderType, id=graphene.ID())
+    
+    # Filtered connection queries (new)
+    all_customers = DjangoFilterConnectionField(CustomerType)
+    all_products = DjangoFilterConnectionField(ProductType)
+    all_orders = DjangoFilterConnectionField(OrderType)
 
     def resolve_hello(self, info):
         return "Hello, GraphQL!"
