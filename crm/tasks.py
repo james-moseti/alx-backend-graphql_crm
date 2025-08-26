@@ -3,6 +3,7 @@ from datetime import datetime
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
 from celery import shared_task
+import requests
 
 @shared_task
 def generate_crm_report():
