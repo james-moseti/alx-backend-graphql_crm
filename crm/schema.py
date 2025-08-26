@@ -4,10 +4,11 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from django.db import transaction
 from django.core.exceptions import ValidationError
-from crm.models import Customer, Product, Order
+from .models import Customer, Product, Order
 from .filters import CustomerFilter, ProductFilter, OrderFilter
 import re
 from decimal import Decimal
+from crm.models import Product
 
 
 # GraphQL Types
